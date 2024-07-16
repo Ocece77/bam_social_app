@@ -6,6 +6,7 @@ import helmet from 'helmet'
 import { fileURLToPath } from "url"
 import cookieParser from 'cookie-parser'
 import mongoose from "mongoose"
+import userRoutes from "./routes/user.route.js"
 
 dotenv.config({path : '../.env'})
 const app = express()
@@ -22,6 +23,8 @@ app.use(express.static(path.join(__dirname , "../client/dist")))
 
 mongoose.connect( process.env.MONGO)
 .then(()=> console.log("The db is connected"))
+
+app.use("/api/user" , userRoutes )
 
 app.listen(PORT,()=>{
   console.log("running on port" , PORT)

@@ -12,11 +12,11 @@ const Homepage: React.FC =()=>{
     <div className="pt-20 md:pt-40 h-fit">
 
             <div>
-              <div className="text-center rounded-lg relative">
+              <div className="text-center rounded-lg relative ">
                  <img src={gif} alt='gif' className="absolute -z-0 w-28 -top-20 right-0 md:-top-20 md:left-4 md:w-40 " />
                   {/*Illustration by Marina Mogulska from Ouch!*/}
                     <h1 className=" animate-slide-in text-[5rem] md:text-[5rem] lg:text-[6.2rem] relative leading-[3.4rem] md:leading-[4rem] lg:leading-[4.6rem] text-white uppercase font-extrabold md:px-5">POST YOUR <span className="text-fluo">BAM</span> AND MAKE NEW <span className="text-fluo">FRIENDS</span> </h1>
-                    <img src={stickers} alt="bam stickers" className="  absolute w-28 top-18 md:top-24  md:right-2 md:w-40 lg:top-20 lg:w-56 lg:right-20 rounded-full animate-spin-slow" />
+                    <img src={stickers} alt="bam stickers" className=" absolute w-28 top-18 md:top-24  md:right-2 md:w-40 lg:top-20 lg:w-56 lg:right-20 rounded-full animate-spin-slow" />
                </div>
             </div>
 
@@ -30,23 +30,23 @@ const Homepage: React.FC =()=>{
 
               <div className="rounded-3xl bg-neutral-200 text-center py-4 bg-opacity-40 ">
                 <div className="grid grid-rows-2">
-                 <p className="font-extrabold text-sm md:text-xl">SHARE WITH YOUR FRIENDS</p>
+                 <p className="font-extrabold text-sm md:text-xl hover:text-blue-800 transition-all">SHARE WITH YOUR FRIENDS</p>
                  <p className="font-thin text-[.7rem] md:text-lg">Stay in touch with your friends </p>
                 </div>
 
                 <div className="w-full flex justify-center">
-                <img src={chat} alt="heart" className="w-48 pt-4" />
+                <img src={chat} alt="heart" className="w-48 pt-4 hover:scale-110 transition-all" />
                </div>
               </div>
 
               <div className="rounded-3xl bg-neutral-200 text-center py-4 bg-opacity-40 ">
                 <div className="grid grid-rows-2">
-                 <p className="font-extrabold text-sm md:text-xl">CREATE A COMMUNITY</p>
+                 <p className="font-extrabold text-sm md:text-xl hover:text-blue-800 transition-all">CREATE A COMMUNITY</p>
                  <p className="font-thin text-[.7rem] md:text-lg">Create and connected with the community </p>
                 </div>
 
                 <div className="w-full flex justify-center">
-                <img src={create} alt="heart"  className="w-52"/>
+                <img src={create} alt="heart"  className="w-52 hover:scale-110 transition-all"/>
                </div>
                 
               </div>
@@ -54,21 +54,19 @@ const Homepage: React.FC =()=>{
 
               <div className="rounded-3xl bg-neutral-200 text-center py-4 bg-opacity-40 ">
                 <div className="grid grid-rows-2">
-                 <p className="font-extrabold text-sm md:text-xl">FOLLOW THE TREND</p>
+                 <p className="font-extrabold text-sm md:text-xl hover:text-blue-800 transition-all">FOLLOW THE TREND</p>
                  <p className="font-thin text-[.7rem] md:text-lg">Follow all the trends and be trendy</p>
                 </div>
 
                <div className="w-full flex justify-center">
-                <img src={heart} alt="heart"  className="w-48 pt-4"/>
+                <img src={heart} alt="heart"  className="w-48 pt-4 hover:scale-110 transition-all"/>
                </div>
               </div>
                
                
             </div>
           </div>
-     
-
-          
+      
     </div>
   
     </>
