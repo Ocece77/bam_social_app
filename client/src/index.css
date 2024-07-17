@@ -36,3 +36,22 @@ html, body, div#root{
 .font-lato{
   font-family:lato;
 }
+
+.text-gradient-animation{
+  background-image: linear-gradient(45deg, #FF44CC, #EA00FF, #FF1493, #FF5E00, #FF3131);
+  color: transparent;
+  -webkit-background-clip: text; /* Edge, Chrome */
+  background-clip: text; /* Safari, FF */
+  animation: gradientAnimation 6s linear infinite;
+  animation-direction: alternate;
+  background-size: 300% 100%;
+}
+
+@keyframes gradientAnimation {
+  0% {
+    background-position: 0;
+  }
+  to {
+    background-position: 100%;
+  }
+}

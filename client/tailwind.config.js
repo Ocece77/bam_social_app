@@ -7,7 +7,8 @@ export default {
   theme: {
     extend: {
       colors:{
-        "fluo" : "#B6FF00"
+        "fluo" : "#B6FF00",
+        "blkblue" : "#0e0f19"
       },
       keyframes: {
         slideIn:{

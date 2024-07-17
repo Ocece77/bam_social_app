@@ -1,6 +1,8 @@
 import User from "../models/user.models.js";
 import bcryptjs from "bcryptjs";
 import dotenv from "dotenv";
+import jwt from 'jsonwebtoken';
+
 
 dotenv.config({path : "../.env"})
 
@@ -14,18 +16,10 @@ export const login = async (req, res , next)=>{
     const tryUserPassword = await bcryptjs.compareSync(req.body.password , tryUser.password )
     if (!tryUserPassword){
       return res.status(400).json({message:"the user doesn't exist or the email or password is incorrect"})
-    } else {
-      res.status(200).json({
-        userId : User._id,
-        token : jwt.sign(
-          {userId: tryUser._id},
-           process.env.JWT_TOKEN,
-           { expiresIn: '24h' }
-        )
-      })
-      return tryUser
-    }
-    
+    } 
+    const token= jwt.sign({userId: tryUser._id},process.env.JWT_TOKEN,{expiresIn : '24h'})
+    res.status(200).json({token, ...tryUser._doc} )
+          
   }
  } catch(e){
   return res.status(500).json(e)

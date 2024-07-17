@@ -2,13 +2,13 @@
 import { combineReducers } from 'redux'
 import { persistStore, persistReducer } from 'redux-persist'
 import storage from 'redux-persist/lib/storage' 
-import userReducer from './userSlice';
+import userReducer  from './userSlice';
 import { configureStore, EnhancedStore } from '@reduxjs/toolkit';
 
 const rootReducer = combineReducers({
   user: userReducer
-  
 })
+
  
 const persistConfig = {
   key: 'root',
@@ -24,5 +24,6 @@ export const store  : EnhancedStore = configureStore({
     getDefaultMiddleware({ serializableCheck: false }),
 });
 
+export type RootState = ReturnType<typeof rootReducer>
 
 export const persistor = persistStore(store)

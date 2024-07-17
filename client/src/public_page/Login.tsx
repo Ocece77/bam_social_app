@@ -3,14 +3,16 @@ import { useDispatch } from "react-redux"
 import { useSelector } from "react-redux"
 import { useNavigate } from "react-router-dom"
 import { fetchStart, loginFailed, loginSuccess } from "../redux/userSlice"
+import { RootState } from "../redux/store"
+import { Link } from "react-router-dom"
 
 
 const Login: React.FC =()=>{
 
-  const state = useSelector((state : any) => state.user)
+  const state = useSelector((state : RootState) => state.user)
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  
+
    interface formulaireObj{
     email? : string,
     password? :string,
@@ -18,12 +20,12 @@ const Login: React.FC =()=>{
 
    const [form , setForm] = useState<formulaireObj>()
   
-   const trackChange = (e : any) =>  {
+   const trackChange =  (e :  React.ChangeEvent<HTMLInputElement>) =>  {
       setForm({...form , [e.currentTarget.id] : e.currentTarget.value})
 
    }
 
-  const login = async (e : any | HTMLFormElement)=>{
+  const login = async (e : React.FormEvent<HTMLFormElement>)=>{
 
     e.preventDefault()
     if (!form?.email ||!form?.password ){
@@ -45,8 +47,9 @@ const Login: React.FC =()=>{
         dispatch(loginFailed())
       }else{
         const data = await res.json()
+        delete data.password
         dispatch(loginSuccess(data))
-        navigate("/dashboard?tab=tl")
+        navigate("/dashboard?tab=timeline")
       }
     } catch(e){
       console.error(e)
@@ -60,8 +63,7 @@ const Login: React.FC =()=>{
         <form onSubmit={login} className="text-white  px-10 md:px-12 lg:w-2/5 mx-auto  ">
           
           <p className="text-3xl font-bold ">Log<span className="text-fluo">in</span></p>
-
-
+          <p>You don't have an account yet, create one <Link to="/sign" className="underline text-fluo hover:text-lime-800">here</Link></p>
           <div className="flex flex-col gap-5 pt-4">
             <div className="flex flex-col gap-2 text-sm">
                   <label htmlFor="email">Enter your email : </label>

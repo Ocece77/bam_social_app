@@ -4,8 +4,12 @@ import create from "../assets/create.gif"
 import chat from "../assets/chat.png"
 import stickers from "../assets/stickers2.png"
 import { Link } from "react-router-dom"
+import { useSelector } from "react-redux"
+import { RootState } from "../redux/store"
 
 const Homepage: React.FC =()=>{
+  const state = useSelector((state : RootState) => state.user)
+
   return(
     <>
 
@@ -21,7 +25,7 @@ const Homepage: React.FC =()=>{
             </div>
 
             <div className="w-fit mt-28 md:mt-20 mx-auto">
-              <Link to="/sign" className="text-lg rounded border border-white text-white font-light w-fit px-2 py-1 hover:border-blue-700 hover:text-blue-700 transition-all">Post your first bam right now</Link>
+              <Link to={state.currUser?"/dashboard?tab=timeline":"/sign"} className="text-lg rounded border border-white text-white font-light w-fit px-2 py-1 hover:border-blue-700 hover:text-blue-700 transition-all">Post your first bam right now</Link>
             </div>
 
           <div className="h-full w-full pt-10">

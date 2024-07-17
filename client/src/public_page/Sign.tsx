@@ -3,11 +3,13 @@ import { useDispatch } from "react-redux"
 import { useNavigate } from "react-router-dom"
 import { fetchStart, signFailed, signSuccess } from "../redux/userSlice"
 import { useSelector } from "react-redux"
+import { RootState } from "../redux/store"
+import { Link } from "react-router-dom"
 
 
 const Sign : React.FC=()=>{
 
-  const state = useSelector((state : any) => state.user)
+  const state = useSelector((state : RootState) => state.user)
   const navigate = useNavigate()
   const dispatch = useDispatch()
    interface formulaireObj{
@@ -20,13 +22,13 @@ const Sign : React.FC=()=>{
 
    const [form , setForm] = useState<formulaireObj>()
   
-   const trackChange = (e : any) =>  {
+   const trackChange = (e :  React.ChangeEvent<HTMLInputElement>) =>  {
       setForm({...form , [e.currentTarget.id] : e.currentTarget.value})
    }
 
-   const createUser = async (e :any | HTMLFormElement) => {
+   const createUser = async (e :React.FormEvent<HTMLFormElement>| HTMLFormElement ) => {
        e.preventDefault()
-       if (!form?.email || !form?.username ||!form?.password || !form?.confirmedpassword){
+       if (!form?.email || !form.username ||!form?.password || !form?.confirmedpassword){
         console.error("all the field must be completed")
         return;
        }
@@ -65,10 +67,11 @@ const Sign : React.FC=()=>{
 
   return(
     <>
-    <div className="py-16 h-full">
+     <div className="py-16 h-full">
         <form onSubmit={createUser} className="text-white px-28 lg:px-96 ">
           
           <p className="text-3xl font-bold ">Sign<span className="text-fluo">up</span></p>
+          <p>You already have an account, login <Link to="/login" className="underline text-fluo hover:text-lime-800">here</Link></p>
 
 
           <div className="flex flex-col gap-5 pt-4">
@@ -123,8 +126,7 @@ const Sign : React.FC=()=>{
 
 
         </form>
-    </div>
-
+     </div>
     </>
   )
 }
