@@ -1,22 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { IUser } from "../interface/IUser";
 
 
-
-export interface IUser {
-  email: string;
-  username: string;
-  password: string;
-  profilpicture?: string | null;
-  bgpicture?: string | null;
-  description?: string;
-  followers?: any[];
-  following?: any[];
-  createdAt?: Date;
-  updatedAt?: Date;
-}
 
 export interface userState {
-  currUser: IUser | object | boolean | null;
+  currUser: IUser | null;
   loading: boolean | null;
   error: boolean | null;
   accCreated: boolean | null;
@@ -50,7 +38,7 @@ const userSlice = createSlice({
       state.error = true;
     },
         //login action
-    loginSuccess: (state, action: PayloadAction<object | boolean>) => {
+    loginSuccess: (state, action: PayloadAction<IUser>) => {
       state.loading = false;
       state.currUser = action.payload;
       state.accCreated = false;

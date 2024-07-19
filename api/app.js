@@ -7,6 +7,7 @@ import { fileURLToPath } from "url"
 import cookieParser from 'cookie-parser'
 import mongoose from "mongoose"
 import userRoutes from "./routes/user.route.js"
+import postRoutes from "./routes/post.route.js"
 
 dotenv.config({path : '../.env'})
 const app = express()
@@ -25,6 +26,7 @@ mongoose.connect( process.env.MONGO)
 .then(()=> console.log("The db is connected"))
 
 app.use("/api/user" , userRoutes )
+app.use("/api/post" , postRoutes )
 
 app.listen(PORT,()=>{
   console.log("running on port" , PORT)

@@ -11,14 +11,20 @@ import { useDispatch } from "react-redux";
 import { logoutSuccess } from "../redux/userSlice";
 
 const LeftSidebar: React.FC =()=>{
+
+  const dispatch = useDispatch()
   const {currUser} = useSelector((state: RootState ) => state.user)
   const context = useContext(NavContext)
+  
+  if (!currUser) {
+    return null; // ou une autre interface utilisateur si l'utilisateur n'est pas connecté
+  }
   if(!context){
    throw new Error("There's no context")
   }
 
   const { open,isOpen} = context;
-  const dispatch =useDispatch()
+
 
   const logOut = () => {
     dispatch(logoutSuccess())
