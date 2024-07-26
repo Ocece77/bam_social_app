@@ -5,7 +5,7 @@ import { Routes, Route, Outlet } from 'react-router-dom';
 import Sign from "./public_page/Sign";
 import Login from "./public_page/Login";
 import Dashboard from "./private_page/Dashboard";
-import PrivateRoute from "./components/privateRoute";
+import PrivateRoute from "./components/PrivateRoute";
 import Error from "./public_page/Error";
 import PrivateNav from "./components/PrivateNav";
 import { NavProvider } from "./utils/context/Context";

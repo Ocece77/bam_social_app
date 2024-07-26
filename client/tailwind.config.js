@@ -16,9 +16,14 @@ export default {
         },
         slideReverse:{
           '0%': { transform: 'translateX(-80%)' },
+        },
+        fade: {
+          '0%': {  opacity : 0 },
+          '100%': {  opacity:1 },
         }
       },
       animation: {
+        'fade': 'fade .2s ease-in ',
         'slide-in': "slideIn .7s ease",
         'slide-in-reverse': "slideReverse 1s ease",
         'spin-slow': 'spin 15s linear infinite',

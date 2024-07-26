@@ -26,6 +26,9 @@ const postSchema =  mongoose.Schema({
   },
   userPic:{
     type:String
+  },
+  userName:{
+    type:String,
   }
 },
  {

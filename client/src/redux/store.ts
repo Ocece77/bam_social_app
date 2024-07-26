@@ -3,10 +3,12 @@ import { combineReducers } from 'redux'
 import { persistStore, persistReducer } from 'redux-persist'
 import storage from 'redux-persist/lib/storage' 
 import userReducer  from './userSlice';
+import postReducer  from './postSlice';
 import { configureStore, EnhancedStore } from '@reduxjs/toolkit';
 
 const rootReducer = combineReducers({
-  user: userReducer
+  user: userReducer,
+  post: postReducer
 })
 
  
