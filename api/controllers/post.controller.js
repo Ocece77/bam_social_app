@@ -42,13 +42,14 @@ export const createPost = async (req, res)=>{
 }
 
 
-export const putPost = async (req, res)=>{
-  const id = req.params
+export const updatePost = async (req, res)=>{
+  const {id} = req.params
   try{
-    const postById = await Post.findOneAndUpdate({id} , {...req.body})
+    const postById = await Post.updateOne({_id : id} , {...req.body})
     if(!postById){
-      return res.status(400).json({error: e})
+      return res.status(400).json({error : 'update failed'})
     }
+    return res.status(200).json({ message: 'Update successful' });
   } catch(e){
     return res.status(500).json({error: e})
   }

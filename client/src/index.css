@@ -55,3 +55,11 @@ html, body, div#root{
     background-position: 100%;
   }
 }
+.heart {
+  cursor: pointer;
+  height: 50px;
+  width: 50px;
+  background-image:url( 'https://abs.twimg.com/a/1446542199/img/t1/web_heart_animation.png');
+  background-repeat:no-repeat;
+  background-size:2900%;
+}

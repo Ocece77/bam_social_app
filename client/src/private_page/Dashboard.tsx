@@ -48,13 +48,13 @@ const outletContent = () :ReactElement=>{
   return(
     <>
     
-    <div className="grid md:grid-cols-5 ">
+    <div className="grid md:grid-cols-5 overflow-hidden w-full">
 
     <div className="col-span-1">
      <LeftSidebar/>
     </div>
 
-    <div className="col-span-4 py-10  px-6 md:ps-12 lg:ps-20 md:pe-20">
+    <div className="col-span-3 py-10 px-6 md:ps-12 lg:ps-20 md:pe-20 w-full ">
      {outletContent()}
     </div>
 

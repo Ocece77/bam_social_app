@@ -5,6 +5,7 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
+
     extend: {
       colors:{
         "fluo" : "#B6FF00",
@@ -20,6 +21,10 @@ export default {
         fade: {
           '0%': {  opacity : 0 },
           '100%': {  opacity:1 },
+        },
+        heartBurst :{
+          '0%': {backgroundPosition:'left'},
+          '100%':{ backgroundPosition:'right' }
         }
       },
       animation: {
@@ -27,6 +32,9 @@ export default {
         'slide-in': "slideIn .7s ease",
         'slide-in-reverse': "slideReverse 1s ease",
         'spin-slow': 'spin 15s linear infinite',
+        "like-anim" : "heartBurst .8s steps(28) 1",
+        "dislike-anim" : "heartBurst .8s steps(28) 1 reverse"
+
       }
     },
   },

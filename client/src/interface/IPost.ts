@@ -1,6 +1,6 @@
 
 export interface IPost {
-  id: string;
+  _id: string;
   content: string;
   image?: string;
   like:  [];
@@ -8,7 +8,7 @@ export interface IPost {
   share?:  [];
   userId?: string;
   userPic?: string;
-  userName?: string;
-  createdAt?: string;
+  userName: string;
+  createdAt: string;
   updatedAt?: Date;
 }

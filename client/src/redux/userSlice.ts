@@ -70,7 +70,7 @@ export const {
   signFailed,
   loginSuccess,
   loginFailed,
-logoutSuccess,
+  logoutSuccess,
   logoutFailed,
 } = userSlice.actions;
 

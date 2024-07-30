@@ -14,7 +14,6 @@ dist
 env
 dist-ssr
 *.local
-InitFireBase.ts
 
 # Editor directories and files
 .vscode/*
