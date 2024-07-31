@@ -4,11 +4,12 @@ export interface IPost {
   content: string;
   image?: string;
   like:  [];
-  repost?:  [];
+  repost: [];
   share?:  [];
   userId?: string;
   userPic?: string;
   userName: string;
   createdAt: string;
   updatedAt?: Date;
+  refreshFunc? : () => void
 }

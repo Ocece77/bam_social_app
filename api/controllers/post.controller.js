@@ -45,7 +45,28 @@ export const createPost = async (req, res)=>{
 export const updatePost = async (req, res)=>{
   const {id} = req.params
   try{
-    const postById = await Post.updateOne({_id : id} , {...req.body})
+    const postById = await Post.updateOne(
+      { _id: id },
+      { $push: req.body }
+    );
+
+    if(!postById){
+      return res.status(400).json({error : 'update failed'})
+    }
+    return res.status(200).json({ message: 'Update successful' });
+  } catch(e){
+    return res.status(500).json({error: e})
+  }
+}
+
+export const updatePostByRemoving = async (req, res)=>{
+  const {id} = req.params
+  try{
+    const postById = await Post.updateOne(
+      { _id: id },
+      { $pull: req.body }
+    );
+
     if(!postById){
       return res.status(400).json({error : 'update failed'})
     }
@@ -56,10 +77,14 @@ export const updatePost = async (req, res)=>{
 }
 
 
+
 export const deletePost = async (req, res)=>{
   const id = req.params
   try{
-    const postById = await Post.findOneAndDelete({id})
+    const postById = await Post.delete(
+      { _id: id },
+      { $push: req.body }
+    );
     if(!postById){
       return res.status(400).json({error: e})
     }

@@ -2,20 +2,31 @@ import { IPost } from "../interface/IPost"
 import defaultpic from "../assets/defaultuser.png";
 import { FontAwesomeIcon,  } from "@fortawesome/react-fontawesome";
 import { faFlag, faRetweet, faShare } from "@fortawesome/free-solid-svg-icons";
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { updatePostSuccess , updatePostFailed ,updatePostStart} from "../redux/postSlice";
 import { RootState } from "../redux/store";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 
 
-const PostCard:FC<IPost> =({_id, content, image, like, repost, userId, userPic, userName, createdAt,} : IPost)=>{
+const PostCard:FC<IPost> =({_id, content, image, like, repost, userId, userPic, userName, createdAt, refreshFunc } : IPost , )=>{
+     const dispatch = useDispatch()
+     const navigate =  useNavigate()
+     
+      const [likeNumber , setLikeNumber] = useState<number>(like.length)
+      const [repostNumber , setRepostNumber] = useState<number>(repost.length)
+      const [likeList, setLikeList] = useState<string[]>([]);
+      const [repostList, setRepostList] =  useState<string[]>([]);
       
-      interface postData {
-        like? : [],
-        repost? : []
-      }
-      const [data ,setData] = useState<postData>()
+      useEffect(()=>{
+        setLikeList(like)
+        setRepostList(repost)  
+       }, [likeList , repostList])
+
       const {currUser} = useSelector((state : RootState) => state.user)
+
       if(!createdAt){
         return;
       }
@@ -58,41 +69,87 @@ const PostCard:FC<IPost> =({_id, content, image, like, repost, userId, userPic, 
               }
 
       }
-    
-     const handleUpdate = async (e : React.MouseEvent<HTMLButtonElement | HTMLDivElement>) => {
-       //animation
-        e.currentTarget.classList.toggle("animate-like-anim")
-        e.currentTarget.classList.toggle("bg-right")
-        e.currentTarget.classList.toggle("bg-left")
+      
+      function removeItem<T>(arr: Array<T>, value: T): Array<T> { 
+        const index = arr.indexOf(value);
+        if (index > -1) {
+          arr.splice(index, 1);
+        }
+        return arr;
+      }
 
-       setData({ [e.currentTarget.id] : [currUser?.username] }) 
-    
+      function addItem<T>(arr: Array<T>, value: T): Array<T> { 
+        if (!arr.includes(value)){
+          arr.push(value)
+        }
+        return arr;
+      }
+      
+      //add / removing like or repost
+      const handleUpdate = async (e : React.MouseEvent<HTMLDivElement | HTMLButtonElement>) => {
+      if (!currUser){
+      navigate("/login")
+      } 
+      let apiUrl;
+      const action = e.currentTarget.id == 'like' ? 'like' : 'repost' 
+      if (action == 'like'){//like action
+        apiUrl = likeList.includes(`${currUser?.username}`) ?  `/api/post/updateByRemoving/${_id}`: `/api/post/update/${_id}` 
+      } else{
+        apiUrl = repostList.includes(`${currUser?.username}`) ? `/api/post/updateByRemoving/${_id}` :`/api/post/update/${_id}` 
+      }
+ 
       try{
-        const res = await fetch(`/api/post/update/${_id}` ,{
-          method: 'POST', 
-          headers : {
+        dispatch(updatePostStart());
+
+        const res = await fetch(apiUrl , {
+          method: "PUT",
+          headers:{
             "Authorization" : `Bearer ${currUser?.token}`,
             "Content-Type" : "application/json"
           },
-          body : JSON.stringify(data)
-        })
-        if (!res.ok){
-          console.error('action failed' )
+          body : JSON.stringify({[e.currentTarget.id] : currUser?.username})
+        });
+
+        if(!res.ok){
+          dispatch(updatePostFailed());
+          console.error("error occured while trying to update" ,action )
         } else{
-          return;
+          dispatch(updatePostSuccess())
+          if (!refreshFunc) return;
+
+          if (action == 'like'){
+            if (likeList.includes(`${currUser?.username}`)) {
+              setLikeList(removeItem(likeList ,`${currUser?.username}` ))
+              setLikeNumber(likeNumber - 1) 
+            } else{
+              setLikeList(addItem(likeList,`${currUser?.username}`))
+              setLikeNumber(likeNumber + 1)
+            } 
+           
+          } else{
+            if (repostList.includes(`${currUser?.username}`)) {
+              setRepostList(removeItem(repostList ,`${currUser?.username}` ))
+              setRepostNumber(repostNumber - 1) 
+            } else{
+              setRepostList(addItem(repostList,`${currUser?.username}`))
+              setRepostNumber(repostNumber + 1)
+            } 
+          }
+
+          refreshFunc();
         }
-      } catch(e){
-        throw new Error 
-      }
-     } 
 
-
-     const isLiked = like?.filter((userLiking)=> userLiking == currUser?.username).length != 0
-     const isReposted = repost?.filter((userReposting)=> userReposting == currUser?.username).length != 0
+        } catch(e){
+          console.error("error occured", e)
+        }
+      };
 
      const displayShareLink = () =>{
       return;
      }
+
+     
+
 
   return(
     
@@ -116,7 +173,7 @@ const PostCard:FC<IPost> =({_id, content, image, like, repost, userId, userPic, 
             <p className="text-sm">{content}</p>
           { image &&
             <div className="flex justify-center py-4">
-            <img src={image} alt="post image" className="object-cover  w-full p-10" />
+            <img src={image} alt="post image" className="object-cover w-full p-10" />
           </div> 
           }
        
@@ -127,18 +184,18 @@ const PostCard:FC<IPost> =({_id, content, image, like, repost, userId, userPic, 
 
 
              <div className="flex items-center ">
-               <div id='like' className={`heart ${isLiked ? "bg-right" : "bg-left"}`} onClick={handleUpdate}/> 
-              <p className="text-sm -ms-3">{like?.length}</p>
+               <div id='like' className={`heart ${likeList.includes(`${currUser?.username}`) ? "animate-like-anim bg-right" : "bg-left" } hover:bg-right hover:scale-150 transition-transform`} onClick={handleUpdate}/> 
+               <p className="text-sm -ms-3">{likeNumber}</p>
              </div>
 
              <div className="flex items-center gap-x-2"  >
-              <button onClick={handleUpdate}>
-                <FontAwesomeIcon id='repost' icon={faRetweet} />
+              <button id="repost"  onClick={handleUpdate}>
+                <FontAwesomeIcon id='repost' icon={faRetweet} className={`${repostList.includes(`${currUser?.username}`) && "text-sky-500 animate-bam"} hover:scale-150 hover:text-sky-500 hover:rotate-12 transition-all`} />
               </button>
-              <p className="text-sm  -ms-1">{repost?.length}</p>
+              <p className="text-sm -ms-1">{repostNumber}</p>
              </div>
 
-             <button>
+             <button onClick={displayShareLink}>
               <FontAwesomeIcon icon={faShare} onClick={displayShareLink}/>
              </button>
 

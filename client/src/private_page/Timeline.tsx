@@ -23,6 +23,7 @@ import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { v4 as uuidv4 } from 'uuid';
 
 const Timeline: React.FC = () => {
+
   const { currUser } = useSelector((state: RootState) => state.user);
   const currPostState = useSelector((state: RootState) => state.post);
 
@@ -37,12 +38,12 @@ const Timeline: React.FC = () => {
   const dispatch = useDispatch(); // interact with the redux store
   const [limit, setLimit] = useState<number>(140); // char limit
   const [postList, setPostList] = useState<Array<IPost>>([]); // list of posts
+  const [controller, setController] = useState<AbortController | null>(null);
 
   // State for profile picture
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imageFileURL, setImageFileURL] = useState<string | null>(null);
   const [pourcent, setPourcent] = useState<number>(0);
-  const [url , setUrl] = useState<string | null>(null);
   const [form, setForm] = useState<PostForm>({
     content: "",
     userId: currUser ? currUser._id : "",
@@ -58,8 +59,6 @@ const Timeline: React.FC = () => {
       setLimit(140 - TextArea.current.value.length);
     }
   };
-
-  const controller = new AbortController();
 
   // Call the API
   const getPost = async (signal: AbortSignal) => {
@@ -84,14 +83,29 @@ const Timeline: React.FC = () => {
     }
   };
 
+
   // Call the API on every update
   useEffect(() => {
     if (!currUser) return;
-    getPost(controller.signal);
+
+    const newController = new AbortController();
+    setController(newController);
+    getPost(newController.signal);
+
     return () => {
-      controller.abort();
+      newController.abort();
     };
-  }, []);
+  }, [currUser]);
+
+  
+  const refreshFunc = () : void => {
+    if (controller) {
+      controller.abort();
+      const newController = new AbortController();
+      setController(newController);
+      getPost(newController.signal);
+    }
+  };
 
   // Upload image
   const uploadImage = async (): Promise<string> => {
@@ -267,7 +281,8 @@ const Timeline: React.FC = () => {
               repost={post.repost}
               userId={post.userId}
               userPic={post.userPic}
-              createdAt={post.createdAt}/>
+              createdAt={post.createdAt}
+              refreshFunc={refreshFunc} />
           ))
        }
 

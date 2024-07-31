@@ -25,6 +25,11 @@ export default {
         heartBurst :{
           '0%': {backgroundPosition:'left'},
           '100%':{ backgroundPosition:'right' }
+        },
+        bamAnim :{
+          '0%': {transform: 'scale(.5)' },
+          '50%': {transform: 'rotateX(180deg)' },
+          '100%':{transform: 'scale(1)' }
         }
       },
       animation: {
@@ -33,8 +38,7 @@ export default {
         'slide-in-reverse': "slideReverse 1s ease",
         'spin-slow': 'spin 15s linear infinite',
         "like-anim" : "heartBurst .8s steps(28) 1",
-        "dislike-anim" : "heartBurst .8s steps(28) 1 reverse"
-
+        'bam' :"bamAnim .4s ease-out",
       }
     },
   },
