@@ -33,7 +33,7 @@ const LeftSidebar: React.FC =()=>{
     <>
     <div className={`${open? "w-full":"-translate-x-96"} md:translate-x-0 transition-all fixed top-0 bottom-0 md:left-16 md:top-24 md:bottom-5 rounded-lg md:w-1/3 lg:w-1/4`}>
 
-      <div className="flex flex-col gap-y-5 h-full rounded-lg bg-blkblue  bg-opacity-5md:bg-transparent">
+      <div className="flex flex-col gap-y-5 h-full rounded-lg bg-blkblue md:bg-transparent bg-opacity-5md:bg-transparent">
 
          {/*user info */}
         <div className=" h-fit relative py-5 border-fluo md:border border-opacity-15 md:bg-neutral-400 md:bg-opacity-10 md:rounded-lg overflow-hidden ">
@@ -42,7 +42,7 @@ const LeftSidebar: React.FC =()=>{
             <img src={currUser.bgpicture ? currUser.bgpicture : defaultbg} alt="defaultbg" className="w-full "/>
           </div>
 
-          <FontAwesomeIcon onClick={()=> isOpen(false)}className="block md:hidden absolute w-fit right-2 top-2 hover:rotate-180 transition-all" size="xl" icon={faXmark} style={{color: "#0e0f19"}} />
+          <FontAwesomeIcon onClick={()=> isOpen(false)} className="block md:hidden absolute w-fit right-2 top-2 hover:rotate-180 transition-all" size="xl" icon={faXmark} style={{color: "#0e0f19"}} />
 
          <div className="relative flex flex-col items-center z-40">
         
@@ -52,7 +52,7 @@ const LeftSidebar: React.FC =()=>{
             <div className="flex flex-col gap-1 items-center ">
               <p className=" bg-fluo rounded px-2 py-1 font-pixelify font-bold  text-lg" >@{currUser.username}</p>
               <p className="text-white font-thin text-sm mt-1">{currUser.description}</p>
-              <Link to="/dashboard?tab=profil" className="font-bold text-white hover:text-fluo transition duration-200 text-sm">See your page</Link>
+              <Link to="/dashboard?tab=profil" className="font-bold text-white hover:text-fluo transition duration-200 text-sm" onClick={()=> isOpen(false)}>See your page</Link>
             </div>
   
             {/*follower and following */}

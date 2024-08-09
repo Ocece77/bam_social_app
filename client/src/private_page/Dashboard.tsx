@@ -13,18 +13,23 @@ import Messages from "./Messages"
 const Dashboard: React.FC =()=>{
  const location = useLocation();
  const [currTab , setCurrTab] = useState<string>("")
-
+ const [colSpan , setColSpan] = useState<string>("")
  useEffect(()=>{
   const searchParams = new URLSearchParams(location.search)
   const tab = searchParams.get('tab')
   if (tab){
    setCurrTab(tab)
+   if (tab == 'timeline' ||tab == 'messages' ){
+    setColSpan("col-span-3")
+   } else{
+    setColSpan("col-span-4 ")
+   }
   }
  }, [location.search])
 
 
+ const outletContent = () :ReactElement=>{
 
-const outletContent = () :ReactElement=>{
   switch(currTab){
     case "timeline":
       return <Timeline/>
@@ -43,7 +48,7 @@ const outletContent = () :ReactElement=>{
       return <Error/>
   }
 
-}
+ }
 
   return(
     <>
@@ -54,8 +59,8 @@ const outletContent = () :ReactElement=>{
      <LeftSidebar/>
     </div>
 
-    <div className="col-span-3 py-10 px-6 md:ps-12 lg:ps-20 md:pe-20 w-full ">
-     {outletContent()}
+    <div className={`${colSpan} py-10 px-6 md:ps-12 lg:ps-20 md:pe-20 w-full `}>
+      {outletContent()}
     </div>
 
     </div>
@@ -64,4 +69,4 @@ const outletContent = () :ReactElement=>{
   )
 }
 
-export default Dashboard
+export default Dashboard 

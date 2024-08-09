@@ -167,7 +167,6 @@ const Timeline: React.FC = () => {
   // Create the post
   const createPost = async (e?: React.FormEvent<HTMLFormElement>) => {
     if (e) e.preventDefault();
-  
     if ((!form.content && !imageFile) || form.content.length > 140) return;
   
     try {
@@ -195,20 +194,29 @@ const Timeline: React.FC = () => {
           dispatch(createPostFailed());
         } else {
           dispatch(createPostSuccess());
+          if (!controller) return;
           getPost(controller.signal);
+          setImageFile(null); 
+          setImageFileURL(null); 
+          if (TextArea.current ) TextArea.current.value = "";
+          if (fileInputRef.current ) fileInputRef.current.value = ""; // Réinitialiser le fichier d'image si nécessaire
+          e?.currentTarget.reset();
+
+          setForm({
+            content: "",
+            userId: currUser ? currUser._id : "",
+            userPic: currUser?.profilpicture ? currUser.profilpicture : defaultpic,
+            userName: currUser ? currUser.username : "",
+          })
         }
       
     } catch (error) {
       console.error(error);
     }
 
-    e?.currentTarget.reset()
-    setForm({
-      content: "",
-      userId: currUser ? currUser._id : "",
-      userPic: currUser?.profilpicture ? currUser.profilpicture : defaultpic,
-      userName: currUser ? currUser.username : "",
-    })
+
+
+
   };
 
 
@@ -224,7 +232,7 @@ const Timeline: React.FC = () => {
           </div>
 
           <form onSubmit={createPost} className="flex flex-col gap-2 w-full px-5">
-              <textarea ref={TextArea} maxLength={140} minLength={1} onChange={handleChange}  name="content" id="content" className="w-full bg-neutral-500 bg-opacity-30 rounded-lg py-2 px-2 text-white placeholder:text-sm" placeholder="What's happening ?"/>      
+              <textarea ref={TextArea} maxLength={140} minLength={1} onChange={handleChange} name="content" id="content" className="w-full bg-neutral-500 bg-opacity-30 rounded-lg py-2 px-2 text-white placeholder:text-sm" placeholder="What's happening ?"/>      
                
              <div className="flex flex-col md:flex-row justify-between flex-wrap">
 
@@ -241,7 +249,7 @@ const Timeline: React.FC = () => {
                           {limit != 140 && <p className="text-red-700 text-[.8rem] animate-fade pe-5">{limit} remaining characters </p>}
                           <button 
                             type="submit" 
-                              className={`bg-fluo font-pixelify w-fit px-3 rounded transition-all 
+                              className={`relative bg-fluo font-pixelify w-fit px-3 rounded transition-all 
                                 ${limit == 140 && !imageFileURL ? "hover:bg-none hover:text-none opacity-60 cursor-not-allowed" : "hover:bg-blue-900 hover:text-white"}`} 
                               disabled={(limit == 140 && !imageFileURL) || currPostState.loading}>
                               bam it
@@ -286,7 +294,7 @@ const Timeline: React.FC = () => {
           ))
        }
 
-       {postList.length == 0 &&
+       {postList.length == 0 &&!currPostState.loading &&
         <div className='flex space-x-1 justify-center items-center pt-10'>
           <span className='sr-only '>no post one the page</span>
           <p className="text-white text-xl"> There's no post 😭</p>

@@ -1,8 +1,8 @@
 import { IPost } from "../interface/IPost"
 import defaultpic from "../assets/defaultuser.png";
 import { FontAwesomeIcon,  } from "@fortawesome/react-fontawesome";
-import { faFlag, faRetweet, faShare } from "@fortawesome/free-solid-svg-icons";
-import { FC, useEffect, useState } from "react";
+import { faComment, faFlag, faRetweet, faShare } from "@fortawesome/free-solid-svg-icons";
+import {  FC, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { updatePostSuccess , updatePostFailed ,updatePostStart} from "../redux/postSlice";
 import { RootState } from "../redux/store";
@@ -14,23 +14,31 @@ import { useNavigate } from "react-router-dom";
 const PostCard:FC<IPost> =({_id, content, image, like, repost, userId, userPic, userName, createdAt, refreshFunc } : IPost , )=>{
      const dispatch = useDispatch()
      const navigate =  useNavigate()
-     
+     const {currUser} = useSelector((state : RootState) => state.user)
+
+
+     const [form, setForm] = useState<object>({
+      username :  currUser?.username,
+      content: ""
+    });
+  
       const [likeNumber , setLikeNumber] = useState<number>(like.length)
       const [repostNumber , setRepostNumber] = useState<number>(repost.length)
       const [likeList, setLikeList] = useState<string[]>([]);
       const [repostList, setRepostList] =  useState<string[]>([]);
-      
+      const [commentId, setCommentId] =  useState<string>();
+      const [limit , setLimit]= useState<string>(0)
       useEffect(()=>{
         setLikeList(like)
         setRepostList(repost)  
        }, [likeList , repostList])
 
-      const {currUser} = useSelector((state : RootState) => state.user)
 
       if(!createdAt){
         return;
       }
       
+
       const calculateTime = (dateString: string) => {
         const postDate = new Date(Date.parse(dateString));
         const d = new Date();
@@ -144,6 +152,19 @@ const PostCard:FC<IPost> =({_id, content, image, like, repost, userId, userPic, 
         }
       };
 
+      const handleComment = (e : React.MouseEvent<HTMLButtonElement>) =>{
+        const {postid} = e.currentTarget.dataset
+        setCommentId(postid);
+      }
+
+      const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> ) => {
+        setForm({ ...form, [e.currentTarget.id]: e.currentTarget.value });
+      };
+     
+      const handlePostComment = (e : React.FormEvent) =>{
+        e.preventDefault;
+        return;
+      }
      const displayShareLink = () =>{
       return;
      }
@@ -183,6 +204,14 @@ const PostCard:FC<IPost> =({_id, content, image, like, repost, userId, userPic, 
           <div className="flex text-white text-opacity-90 px-5 gap-x-4">
 
 
+          <div className="flex items-center gap-x-2"  >
+              <button id="comment" data-postid={_id}  onClick={handleComment}>
+                <FontAwesomeIcon id='repost' icon={faComment} className=" hover:scale-150 hover:text-yellow-500 hover:-rotate-12 transition-all" />
+              </button>
+              <p className="text-sm -ms-1">{repostNumber}</p>
+             </div>
+
+
              <div className="flex items-center ">
                <div id='like' className={`heart ${likeList.includes(`${currUser?.username}`) ? "animate-like-anim bg-right" : "bg-left" } hover:bg-right hover:scale-150 transition-transform`} onClick={handleUpdate}/> 
                <p className="text-sm -ms-3">{likeNumber}</p>
@@ -200,6 +229,16 @@ const PostCard:FC<IPost> =({_id, content, image, like, repost, userId, userPic, 
              </button>
 
           </div>
+
+          {commentId == _id && <form onSubmit={handlePostComment} className="flex flex-col gap-3 text-white text-opacity-90 px-5 gap-x-4">
+             <textarea maxLength={140} minLength={1} onChange={handleChange} name="content" id="content" className="w-full bg-neutral-500 bg-opacity-30 rounded-lg py-2 px-2 text-white placeholder:text-sm" placeholder="What's happening ?"/>      
+             <button 
+               type="submit" 
+               className="relative text-black bg-fluo font-pixelify w-fit px-3 rounded transition-all 
+                       opacity-60 cursor-not-allowed hover:bg-blue-900 hover:text-white justify-self-end" >
+                   bam it
+                </button>  
+          </form>}
 
       </div>
     </>

@@ -1,4 +1,4 @@
-import { GoogleAuthProvider, signInWithRedirect, getAuth ,getRedirectResult} from 'firebase/auth';
+import { GoogleAuthProvider, signInWithRedirect, getAuth } from 'firebase/auth';
 import { app } from '../googlefirebase/InitFireBase.js';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
