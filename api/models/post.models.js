@@ -8,6 +8,10 @@ const postSchema =  mongoose.Schema({
   image:{
     type:String,
   },
+  comment:{
+    type : Array ,
+    default : []
+  },
   like:{
     type : Array ,
     default : []

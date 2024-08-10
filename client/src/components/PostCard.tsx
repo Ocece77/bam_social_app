@@ -8,6 +8,7 @@ import { updatePostSuccess , updatePostFailed ,updatePostStart} from "../redux/p
 import { RootState } from "../redux/store";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { IComment } from "../interface/IComment";
 
 
 
@@ -16,9 +17,9 @@ const PostCard:FC<IPost> =({_id, content, image, like, repost, userId, userPic, 
      const navigate =  useNavigate()
      const {currUser} = useSelector((state : RootState) => state.user)
 
-
-     const [form, setForm] = useState<object>({
-      username :  currUser?.username,
+    
+     const [form, setForm] = useState<IComment>({
+      userName :  currUser?.username,
       content: ""
     });
   
@@ -27,7 +28,7 @@ const PostCard:FC<IPost> =({_id, content, image, like, repost, userId, userPic, 
       const [likeList, setLikeList] = useState<string[]>([]);
       const [repostList, setRepostList] =  useState<string[]>([]);
       const [commentId, setCommentId] =  useState<string>();
-      const [limit , setLimit]= useState<string>(0)
+      const [limit , setLimit]= useState<string>("")
       useEffect(()=>{
         setLikeList(like)
         setRepostList(repost)  
@@ -158,11 +159,43 @@ const PostCard:FC<IPost> =({_id, content, image, like, repost, userId, userPic, 
       }
 
       const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> ) => {
-        setForm({ ...form, [e.currentTarget.id]: e.currentTarget.value });
+        setForm({ ...form, ["_id"] :commentId , [e.currentTarget.id]: e.currentTarget.value, });
       };
      
-      const handlePostComment = (e : React.FormEvent) =>{
+
+      //add comment
+      const handlePostComment = async (e : React.FormEvent) =>{
         e.preventDefault;
+        
+        const {_id , content , userName} = form
+        if (!form) return;
+
+        try {
+          dispatch(updatePostStart());
+          const res = await fetch(`api/post/update/${_id}` , {
+            method: "PUT",
+            headers:{
+              "Authorization" : `Bearer ${currUser?.token}`,
+              "Content-Type" : "application/json"
+            },
+            body : JSON.stringify(form)
+          });
+
+          if (!res.ok){
+            dispatch(updatePostFailed());
+            console.error("error occured while trying to post the comment, try later");
+          }
+          else{
+            dispatch(updatePostSuccess())
+            const data = res.json();
+            console.log(data)
+          }
+         
+        } catch(error){
+          console.log(error);
+          throw new Error;
+        }
+
         return;
       }
      const displayShareLink = () =>{
@@ -212,12 +245,12 @@ const PostCard:FC<IPost> =({_id, content, image, like, repost, userId, userPic, 
              </div>
 
 
-             <div className="flex items-center ">
+             <div className="flex items-center">
                <div id='like' className={`heart ${likeList.includes(`${currUser?.username}`) ? "animate-like-anim bg-right" : "bg-left" } hover:bg-right hover:scale-150 transition-transform`} onClick={handleUpdate}/> 
                <p className="text-sm -ms-3">{likeNumber}</p>
              </div>
 
-             <div className="flex items-center gap-x-2"  >
+             <div className="flex items-center gap-x-2">
               <button id="repost"  onClick={handleUpdate}>
                 <FontAwesomeIcon id='repost' icon={faRetweet} className={`${repostList.includes(`${currUser?.username}`) && "text-sky-500 animate-bam"} hover:scale-150 hover:text-sky-500 hover:rotate-12 transition-all`} />
               </button>
@@ -230,7 +263,8 @@ const PostCard:FC<IPost> =({_id, content, image, like, repost, userId, userPic, 
 
           </div>
 
-          {commentId == _id && <form onSubmit={handlePostComment} className="flex flex-col gap-3 text-white text-opacity-90 px-5 gap-x-4">
+          { commentId == _id && 
+          <form onSubmit={handlePostComment} className="flex flex-col gap-3 text-white text-opacity-90 px-5 gap-x-4">
              <textarea maxLength={140} minLength={1} onChange={handleChange} name="content" id="content" className="w-full bg-neutral-500 bg-opacity-30 rounded-lg py-2 px-2 text-white placeholder:text-sm" placeholder="What's happening ?"/>      
              <button 
                type="submit" 
@@ -238,7 +272,7 @@ const PostCard:FC<IPost> =({_id, content, image, like, repost, userId, userPic, 
                        opacity-60 cursor-not-allowed hover:bg-blue-900 hover:text-white justify-self-end" >
                    bam it
                 </button>  
-          </form>}
+          </form> }
 
       </div>
     </>

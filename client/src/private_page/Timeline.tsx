@@ -21,19 +21,14 @@ import { IPost } from "../interface/IPost";
 import { storage } from "../googlefirebase/InitFireBase";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { v4 as uuidv4 } from 'uuid';
+import { IPostForm } from "../interface/IPostForm";
 
 const Timeline: React.FC = () => {
 
   const { currUser } = useSelector((state: RootState) => state.user);
   const currPostState = useSelector((state: RootState) => state.post);
 
-  interface PostForm {
-    content: string;
-    image?: string | null;
-    userId: string;
-    userPic?: string;
-    userName: string;
-  }
+
 
   const dispatch = useDispatch(); // interact with the redux store
   const [limit, setLimit] = useState<number>(140); // char limit
@@ -44,7 +39,7 @@ const Timeline: React.FC = () => {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imageFileURL, setImageFileURL] = useState<string | null>(null);
   const [pourcent, setPourcent] = useState<number>(0);
-  const [form, setForm] = useState<PostForm>({
+  const [form, setForm] = useState<IPostForm>({
     content: "",
     userId: currUser ? currUser._id : "",
     userPic: currUser?.profilpicture ? currUser.profilpicture : defaultpic,
