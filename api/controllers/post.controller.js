@@ -83,7 +83,6 @@ export const deletePost = async (req, res)=>{
   try{
     const postById = await Post.delete(
       { _id: id },
-      { $push: req.body }
     );
     if(!postById){
       return res.status(400).json({error: e})

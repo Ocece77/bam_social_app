@@ -19,19 +19,33 @@ const PostCard:FC<IPost> =({_id, content, image, like, repost, userId, userPic, 
 
     
      const [form, setForm] = useState<IComment>({
-      userName :  currUser?.username,
-      content: ""
-    });
+        content: "",
+        userName: currUser?.username ,
+        commentForId: _id,
+        userId: currUser?._id,
+        userPic: currUser?.profilpicture ? currUser.profilpicture : defaultpic
+      });
   
+      //post info
       const [likeNumber , setLikeNumber] = useState<number>(like.length)
       const [repostNumber , setRepostNumber] = useState<number>(repost.length)
       const [likeList, setLikeList] = useState<string[]>([]);
       const [repostList, setRepostList] =  useState<string[]>([]);
       const [commentId, setCommentId] =  useState<string>();
-      const [limit , setLimit]= useState<string>("")
+      
+     //comment info
+
+
+
+      const [limit , setLimit]= useState<number>(0)
+      const [commentList, setCommentList] = useState<IComment[]>([]);
+
+
       useEffect(()=>{
         setLikeList(like)
         setRepostList(repost)  
+        getCommentPerPost();
+
        }, [likeList , repostList])
 
 
@@ -40,7 +54,7 @@ const PostCard:FC<IPost> =({_id, content, image, like, repost, userId, userPic, 
       }
       
 
-      const calculateTime = (dateString: string) => {
+      const calculateTime = (dateString: string) : object=> {
         const postDate = new Date(Date.parse(dateString));
         const d = new Date();
         const diff = d.getTime() - postDate.getTime();
@@ -62,7 +76,7 @@ const PostCard:FC<IPost> =({_id, content, image, like, repost, userId, userPic, 
         secondes : number,
       }
 
-      const determineTime = (newCreateAt :decomposedDate) =>{
+      const determineTime = (newCreateAt :decomposedDate): string =>{
 
         if (newCreateAt.days >= 1 ){
            return newCreateAt.days + " days"
@@ -100,7 +114,7 @@ const PostCard:FC<IPost> =({_id, content, image, like, repost, userId, userPic, 
       navigate("/login")
       } 
       let apiUrl;
-      const action = e.currentTarget.id == 'like' ? 'like' : 'repost' 
+      const action = e.currentTarget.id
       if (action == 'like'){//like action
         apiUrl = likeList.includes(`${currUser?.username}`) ?  `/api/post/updateByRemoving/${_id}`: `/api/post/update/${_id}` 
       } else{
@@ -124,7 +138,6 @@ const PostCard:FC<IPost> =({_id, content, image, like, repost, userId, userPic, 
           console.error("error occured while trying to update" ,action )
         } else{
           dispatch(updatePostSuccess())
-          if (!refreshFunc) return;
 
           if (action == 'like'){
             if (likeList.includes(`${currUser?.username}`)) {
@@ -145,7 +158,7 @@ const PostCard:FC<IPost> =({_id, content, image, like, repost, userId, userPic, 
             } 
           }
 
-          refreshFunc();
+          refreshFunc && refreshFunc();
         }
 
         } catch(e){
@@ -153,56 +166,126 @@ const PostCard:FC<IPost> =({_id, content, image, like, repost, userId, userPic, 
         }
       };
 
-      const handleComment = (e : React.MouseEvent<HTMLButtonElement>) =>{
+       //get  the current post's id
+      const handleComment = (e : React.MouseEvent<HTMLButtonElement>):void =>{
         const {postid} = e.currentTarget.dataset
         setCommentId(postid);
       }
 
-      const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> ) => {
-        setForm({ ...form, ["_id"] :commentId , [e.currentTarget.id]: e.currentTarget.value, });
-      };
+      //track the text area for the comment section
+      const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement> ) => {
+        setForm({ ...form, [e.currentTarget.id]: e.currentTarget.value });
+        setLimit(e.currentTarget.value.length);  
+        };
      
-
       //add comment
       const handlePostComment = async (e : React.FormEvent) =>{
         e.preventDefault;
-        
-        const {_id , content , userName} = form
-        if (!form) return;
+        if( form.content.length > 140 || form.content.length < 0 || !form.content || !form.commentForId || !form.userName) return; // prevent empty form or not completed
+      
+        try{
+         const res = await fetch("/api/comment/create", {
+          method: "POST",
+          headers: {
+            'Content-Type': 'application/json',
+            "Authorization": `Bearer ${currUser?.token}`
+          },
+          body: JSON.stringify(form)
+        });
+         if (!res.ok){
+          console.error('error occured while trying to create the comment');
+         } else{
+          console.log("the post has been created");
+         }
+         if (!refreshFunc) return;
+         refreshFunc();
+        }catch(e){
+          console.error(e)
+        }
+      }
 
-        try {
-          dispatch(updatePostStart());
-          const res = await fetch(`api/post/update/${_id}` , {
-            method: "PUT",
-            headers:{
-              "Authorization" : `Bearer ${currUser?.token}`,
-              "Content-Type" : "application/json"
-            },
-            body : JSON.stringify(form)
-          });
+      //get every commment for each post
+      const getCommentPerPost = async () =>{
+        try{
+         const res = await fetch(`/api/comment/getCommentPerPost/${form.commentForId }`);
+         if (!res.ok){
+          console.error('error occured while trying to get the comment');
+         } else{
+          const data: IComment[] = await res.json();
+          setCommentList(data);
+          console.log(data);
+         }
 
-          if (!res.ok){
-            dispatch(updatePostFailed());
-            console.error("error occured while trying to post the comment, try later");
-          }
-          else{
-            dispatch(updatePostSuccess())
-            const data = res.json();
-            console.log(data)
-          }
-         
-        } catch(error){
-          console.log(error);
-          throw new Error;
+         //refresh the page
+         refreshFunc && refreshFunc();
+
+        }catch(e){
+          console.error(e)
+        }
+      }
+
+      //get comment by id
+      const getCommentById = async (id : string) =>{
+        try{
+         const res = await fetch(`/api/comment/getCommentById/${id}`);
+         if (!res.ok){
+          console.error('error occured while trying to get the comment');
+          return;
+         } else{
+          const data = await res.json();
+
+          return data;
+         }
+
+        } catch(e){
+          console.error(e)
+        }
+      }
+
+    //like or repost comment
+      const updatePostComment = async (action: string ,id : string) =>{
+
+       let apiUrl : string = "";
+       const comment =  await getCommentById(id)
+
+       if (comment){
+
+    const hasLiked = comment[action]?.includes(currUser?.username);
+    const apiUrl = hasLiked
+      ? `/api/comment/remove/${id}`
+      : `/api/comment/update/${id}`;
+    const actionType = hasLiked ? "removing" : "updating";
+
+        try{
+         const res = await fetch(apiUrl, {
+          method: "PUT",
+          headers: {
+            'Content-Type': 'application/json',
+            "Authorization": `Bearer ${currUser?.token}`
+          },
+          body: JSON.stringify({action: currUser?.username})
+        });
+
+         if (!res.ok){
+          console.error('error occured while trying to',actionType,'the comment');
+         } else{
+          console.log("the post has been", actionType);
+          refreshFunc && refreshFunc();
+         }
+
+
+        }catch(e){
+          console.error(e)
         }
 
-        return;
       }
+      }
+
      const displayShareLink = () =>{
       return;
      }
 
-     
+
 
 
   return(
@@ -241,15 +324,16 @@ const PostCard:FC<IPost> =({_id, content, image, like, repost, userId, userPic, 
               <button id="comment" data-postid={_id}  onClick={handleComment}>
                 <FontAwesomeIcon id='repost' icon={faComment} className=" hover:scale-150 hover:text-yellow-500 hover:-rotate-12 transition-all" />
               </button>
-              <p className="text-sm -ms-1">{repostNumber}</p>
+              <p className="text-sm -ms-1">{commentList.length}</p>
              </div>
 
-
+          {/*like */}
              <div className="flex items-center">
                <div id='like' className={`heart ${likeList.includes(`${currUser?.username}`) ? "animate-like-anim bg-right" : "bg-left" } hover:bg-right hover:scale-150 transition-transform`} onClick={handleUpdate}/> 
                <p className="text-sm -ms-3">{likeNumber}</p>
              </div>
 
+          {/*repost */}
              <div className="flex items-center gap-x-2">
               <button id="repost"  onClick={handleUpdate}>
                 <FontAwesomeIcon id='repost' icon={faRetweet} className={`${repostList.includes(`${currUser?.username}`) && "text-sky-500 animate-bam"} hover:scale-150 hover:text-sky-500 hover:rotate-12 transition-all`} />
@@ -257,6 +341,7 @@ const PostCard:FC<IPost> =({_id, content, image, like, repost, userId, userPic, 
               <p className="text-sm -ms-1">{repostNumber}</p>
              </div>
 
+          {/*share */}
              <button onClick={displayShareLink}>
               <FontAwesomeIcon icon={faShare} onClick={displayShareLink}/>
              </button>
@@ -264,15 +349,61 @@ const PostCard:FC<IPost> =({_id, content, image, like, repost, userId, userPic, 
           </div>
 
           { commentId == _id && 
+          <div>
           <form onSubmit={handlePostComment} className="flex flex-col gap-3 text-white text-opacity-90 px-5 gap-x-4">
-             <textarea maxLength={140} minLength={1} onChange={handleChange} name="content" id="content" className="w-full bg-neutral-500 bg-opacity-30 rounded-lg py-2 px-2 text-white placeholder:text-sm" placeholder="What's happening ?"/>      
+             <textarea maxLength={140} minLength={1} onChange={handleChange} name="content" id="content" className="w-full bg-neutral-500 bg-opacity-30 rounded-lg py-2 px-2 text-white placeholder:text-sm" placeholder="What's happening ?"/>   
+             <div className="flex justify-between">
              <button 
                type="submit" 
-               className="relative text-black bg-fluo font-pixelify w-fit px-3 rounded transition-all 
-                       opacity-60 cursor-not-allowed hover:bg-blue-900 hover:text-white justify-self-end" >
+               className={`relative text-black bg-fluo font-pixelify w-fit px-3 rounded transition-all 
+                      ${limit === 0 ? "opacity-60 cursor-not-allowed" : "hover:bg-blue-900 hover:text-white"}    justify-self-end`} disabled={limit === 0}>
                    bam it
                 </button>  
-          </form> }
+               <p className={`${limit > 135 && 'text-red-700'}`}>{limit} / 140 characters remaining</p>
+              </div>   
+          </form>
+          
+          <div className="py-5 flex flex-col gap-4 text-white">
+            {commentList && commentList.map((comment : IComment , index:number)=>(
+              <div key={index} className="flex flex-col gap-2 border border-white rounded-xl p-2 bg-slate-100 bg-opacity-10">
+        
+            <div className="flex  justify-between pe-5">
+              <div className="flex items-center gap-2">
+                    <img src={userPic? userPic : defaultpic } alt={`image from ${userId}`} className="rounded-full w-7 h-7"/>
+                    <p className=" text-sm text-opacity-30 font-thin">from <span className="capitalize text-opacity-100 font-bold hover:text-fluo transition-all hover:cursor-pointer">{comment.userName}</span></p>
+                  </div>
+                  
+                <div>
+                 <p className="text-end text-[.7rem] text-neutral-400 py-1">{determineTime(calculateTime(comment.createdAt)) } ago</p>
+                </div>
+            </div>
+   
+
+                <p className="ps-8">{comment.content}</p>
+
+                <div className="flex gap-2 ps-4 -mt-2">
+                  <div className="flex items-center">
+                    <div id='like' className={`heart ${comment.like?.includes(`${currUser?.username}`) ? "animate-like-anim bg-right" : "bg-left" } hover:bg-right hover:scale-150 transition-transform`} onClick={()=>updatePostComment('like',comment._id)}/> 
+                    <p className="text-sm -ms-3">{comment.like?.length}</p>
+                  </div>
+
+                  <div className="flex items-center gap-x-2">
+                    <button id="repost"  onClick={(()=> updatePostComment('repost',comment._id))}>
+                      <FontAwesomeIcon id='repost' icon={faRetweet} className={`${comment.repost?.includes(`${currUser?.username}`) && "text-sky-500 animate-bam"} hover:scale-150 hover:text-sky-500 hover:rotate-12 transition-all`} />
+                    </button>
+                    <p className="text-sm -ms-1">{comment.repost?.length}</p>
+                  </div>
+                </div>
+     
+              </div>
+
+              
+
+            )).reverse()}
+          </div>
+
+          </div>
+          }
 
       </div>
     </>

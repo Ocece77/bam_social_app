@@ -80,7 +80,7 @@ const Login: React.FC =()=>{
 
 
                   <div className="flex flex-col gap-3 ">
-                    <button type="submit" className="border border-white text-white font-extrabold px-2 rounded hover:bg-white hover:text-blue-800 p-2 transition duration-200">Log with the example account</button>
+                    <button type="submit" onClick={()=> setForm({email:"tacos@example.com" , password:process.env.VITE_APP_EXAMPLE_PASSWORD})} className="border border-white text-white font-extrabold px-2 rounded hover:bg-white hover:text-blue-800 p-2 transition duration-200">Log with the example account</button>
                     <button type="submit" className=" bg-blue-900 font-extrabold px-2 rounded hover:bg-white hover:text-blue-800 p-2 transition duration-200">
                         
                         {state.loading && 

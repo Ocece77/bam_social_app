@@ -8,10 +8,6 @@ const postSchema =  mongoose.Schema({
   image:{
     type:String,
   },
-  comment:{
-    type : Array ,
-    default : []
-  },
   like:{
     type : Array ,
     default : []
@@ -21,8 +17,7 @@ const postSchema =  mongoose.Schema({
     default : []
   },
   share:{
-    type : Array ,
-    default : []
+    type : String ,
   },
   userId:{
     type: String
@@ -32,7 +27,8 @@ const postSchema =  mongoose.Schema({
   },
   userName:{
     type:String,
-  }
+  },
+
 },
  {
   timestamps : true

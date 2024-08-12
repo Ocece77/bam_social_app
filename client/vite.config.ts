@@ -26,6 +26,7 @@ export default ({ command  , mode }: ConfigEnv): UserConfig =>  {
       'process.env.VITE_API_FIREBASE_MESSAGING_SENDER_ID' : JSON.stringify(env.VITE_API_FIREBASE_MESSAGING_SENDER_ID),
       'process.env.VITE_API_FIREBASE_APP_ID' : JSON.stringify(env.VITE_API_FIREBASE_APP_ID),
       'process.env.VITE_API_FIREBASE_MEASUREMENT_ID' : JSON.stringify(env.VITE_API_FIREBASE_MEASUREMENT_ID),
+      'process.env.VITE_APP_EXAMPLE_PASSWORD' : JSON.stringify(env.VITE_APP_EXAMPLE_PASSWORD)
     },
   });
 };

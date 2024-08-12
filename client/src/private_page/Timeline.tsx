@@ -241,7 +241,6 @@ const Timeline: React.FC = () => {
 
                    {/* submit btn */}
                       <div className="flex justify-end pe-3 items-center">
-                          {limit != 140 && <p className="text-red-700 text-[.8rem] animate-fade pe-5">{limit} remaining characters </p>}
                           <button 
                             type="submit" 
                               className={`relative bg-fluo font-pixelify w-fit px-3 rounded transition-all 
@@ -256,6 +255,8 @@ const Timeline: React.FC = () => {
           {imageFileURL && <div className="w-full flex justify-center h-64"> 
               <img src={imageFileURL} alt="uploaded image" className="object-cover spect-square rounded w-96"/>
               </div>}
+              {limit != 140 && <p className="text-red-700 text-[.8rem] animate-fade pe-5">{limit} remaining characters </p>}
+
 
             </form>
         </div>
